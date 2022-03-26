@@ -1,4 +1,4 @@
-package jpabook.realjpa;
+package jpabook.realjpa.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

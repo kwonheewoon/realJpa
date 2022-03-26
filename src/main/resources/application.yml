@@ -1,7 +1,8 @@
 spring:
   datasource:
     url: jdbc:h2:tcp://localhost/~/jpamain
-    username: sa
+    #url: jdbc:h2:mem:test
+    username: test
     password:
     driver-class-name: org.h2.Driver
 
@@ -16,5 +17,5 @@ spring:
 logging:
   level:
     org.hibernate.SQL: debug
-    org.hibernate.type: trace
+    #org.hibernate.type: trace
 

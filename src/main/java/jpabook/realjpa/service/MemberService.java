@@ -35,6 +35,13 @@ public class MemberService {
 
     }
 
+    @Transactional
+    public void update(Long id, String name){
+        Member member = memberRepository.findOne(id);
+        member.setName(name);
+
+    }
+
     //readOnly true 설정시 읽기전용 트랜잭션이므로 속도 최적화 가능
     public List<Member> findMember(){
         return memberRepository.findAll();

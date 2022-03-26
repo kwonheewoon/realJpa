@@ -26,7 +26,7 @@ public class ItemRepository {
     }
 
     public List<Item> findAll(){
-        return em.createQuery("select m from Member m",Item.class)
+        return em.createQuery("select item from Item item",Item.class)
                 .getResultList();
     }
 }

@@ -1,5 +1,6 @@
 package jpabook.realjpa.service;
 
+import jpabook.realjpa.controller.OrderSearch;
 import jpabook.realjpa.domain.*;
 import jpabook.realjpa.repository.ItemRepository;
 import jpabook.realjpa.repository.MemberRepository;
@@ -7,6 +8,8 @@ import jpabook.realjpa.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -45,5 +48,10 @@ public class OrderService {
     public void cancelOrder(Long orderId){
         Order order = orderRepository.findOne(orderId);
         order.cancel();
+    }
+
+    public List<Order> orderList(OrderSearch orderSearch){
+        List<Order> orderList = orderRepository.findAll(orderSearch);
+        return orderList;
     }
 }
