@@ -19,6 +19,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toList;
+
 @RestController
 @RequiredArgsConstructor
 public class OrderApiController {
@@ -76,17 +79,19 @@ public class OrderApiController {
     public List<OrderQueryDto> orderV5(){
         return orderQueryRepository.findAllByDto_optimization();
     }
-/*
+
     @GetMapping("/api/v6/orders")
-    public List<OrderFlatDto> orderV6(){
+    public List<OrderQueryDto> orderV6(){
         List<OrderFlatDto>flats = orderQueryRepository.findAllByDto_flat();
         return flats.stream()
-                .collect(Collectors.groupingBy(o -> new OrderQueryDto(o.getOrderId(), o.getName(), o.getOrderDate(), o.getStatus(), o.getAddress()),
-                        Collectors.mapping(o -> new OrderItemQueryDto(o.getOrderId(), o.getItemName(), o.getOrderPrice(), o.getCount(), Collectors.toList())
-                        )).e
+                .collect(groupingBy(o -> new OrderQueryDto(o.getOrderId(), o.getName(), o.getOrderDate(), o.getStatus(), o.getAddress()),
+                        mapping(o -> new OrderItemQueryDto(o.getOrderId(), o.getItemName(), o.getOrderPrice(), o.getCount()), toList())
+                )).entrySet().stream()
+                .map(e -> new OrderQueryDto(e.getKey().getOrderId(), e.getKey().getName(), e.getKey().getOrderDate(), e.getKey().getStatus(), e.getKey().getAddress(), e.getValue()))
+                .collect(toList());
 
 
-    }*/
+    }
 
     @Data
     static class OrderDto {
@@ -103,9 +108,11 @@ public class OrderApiController {
             this.orderDate = o.getOrderDate();
             this.address = o.getDelivery().getAddress();
 
+            System.out.println("*************************************************");
             this.orderItems = o.getOrderItems().stream()
                     .map(orderItem -> new OrderItemDto(orderItem))
                     .collect(Collectors.toList());
+            System.out.println("*************************************************");
         }
 
     }
@@ -119,7 +126,9 @@ public class OrderApiController {
 
 
         public OrderItemDto(OrderItem orderItem) {
+            System.out.println("=================================================================================================");
             this.itemName = orderItem.getItem().getName();
+            System.out.println("=================================================================================================");
             this.orderPrice = orderItem.getOrderPrice();
             this.count = orderItem.getCount();
         }
