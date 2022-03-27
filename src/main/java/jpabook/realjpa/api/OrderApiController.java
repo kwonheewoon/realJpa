@@ -5,9 +5,14 @@ import jpabook.realjpa.domain.Address;
 import jpabook.realjpa.domain.Order;
 import jpabook.realjpa.domain.OrderItem;
 import jpabook.realjpa.repository.OrderRepository;
+import jpabook.realjpa.repository.order.query.OrderFlatDto;
+import jpabook.realjpa.repository.order.query.OrderItemQueryDto;
+import jpabook.realjpa.repository.order.query.OrderQueryDto;
+import jpabook.realjpa.repository.order.query.OrderQueryRepository;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
@@ -19,6 +24,8 @@ import java.util.stream.Collectors;
 public class OrderApiController {
 
     private final OrderRepository orderRepository;
+
+    private final OrderQueryRepository orderQueryRepository;
 
     @GetMapping("/api/v1/orders")
     public List<Order> orderV1(){
@@ -40,6 +47,46 @@ public class OrderApiController {
                 .collect(Collectors.toList());
         return orderDtoList;
     }
+
+    @GetMapping("/api/v3/orders")
+    public List<OrderDto> orderV3(){
+        List<Order> all = orderRepository.findAllWithItem(new OrderSearch());
+        List<OrderDto> orderDtoList = all.stream()
+                .map(dto -> new OrderDto(dto))
+                .collect(Collectors.toList());
+        return orderDtoList;
+    }
+
+    @GetMapping("/api/v3.1/orders")
+    public List<OrderDto> orderV3_page(@RequestParam(value = "offset", defaultValue = "0") int offset,
+                                       @RequestParam(value = "limit", defaultValue = "100") int limit){
+        List<Order> all = orderRepository.findAllWithMemberDelivery(offset, limit);
+        List<OrderDto> orderDtoList = all.stream()
+                .map(dto -> new OrderDto(dto))
+                .collect(Collectors.toList());
+        return orderDtoList;
+    }
+
+    @GetMapping("/api/v4/orders")
+    public List<OrderQueryDto> orderV4(){
+        return orderQueryRepository.findOrderQueryDtos();
+    }
+
+    @GetMapping("/api/v5/orders")
+    public List<OrderQueryDto> orderV5(){
+        return orderQueryRepository.findAllByDto_optimization();
+    }
+/*
+    @GetMapping("/api/v6/orders")
+    public List<OrderFlatDto> orderV6(){
+        List<OrderFlatDto>flats = orderQueryRepository.findAllByDto_flat();
+        return flats.stream()
+                .collect(Collectors.groupingBy(o -> new OrderQueryDto(o.getOrderId(), o.getName(), o.getOrderDate(), o.getStatus(), o.getAddress()),
+                        Collectors.mapping(o -> new OrderItemQueryDto(o.getOrderId(), o.getItemName(), o.getOrderPrice(), o.getCount(), Collectors.toList())
+                        )).e
+
+
+    }*/
 
     @Data
     static class OrderDto {
